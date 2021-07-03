@@ -1,5 +1,6 @@
 package com.fastcampus.secretdiary
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
@@ -82,8 +83,7 @@ class MainActivity : AppCompatActivity() {
             val passwordFromUser = "${binding.np1.value}${binding.np2.value}${binding.np3.value}"
 
             if (passwordPref.getString("password", "000") == passwordFromUser) {
-                // 패스워드 일치
-                // TODO: 2021-06-21 다이어리 페이지 작성 후 startActivity
+                startActivity(Intent(this, DiaryActivity::class.java))
             } else {
                 // 패스워드 불일치
                 showErrorAlertDialog()
