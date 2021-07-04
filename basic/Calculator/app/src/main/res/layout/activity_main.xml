@@ -16,6 +16,34 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_weight="1" />
 
+    <TextView
+        android:id="@+id/tv_expression"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="40dp"
+        android:gravity="end"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1111 * 22" />
+
+    <TextView
+        android:id="@+id/tv_result"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:textColor="#aaaaaa"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/layout_keypad"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="1111 * 22" />
+
     <TableLayout
         android:id="@+id/layout_keypad"
         android:layout_width="0dp"
