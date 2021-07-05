@@ -189,8 +189,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clearHistoryButtonClicked(v: View) {
-        // TODO: 2021-07-05 DB에서 모든 기록 삭제
-        // TODO: 2021-07-05 뷰에서 모든 기록 삭제
+        binding.layoutHistoryLinear.removeAllViews()
+
+        Thread {
+            db.historyDao().deleteAll()
+        }.start()
     }
 }
 
