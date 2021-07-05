@@ -155,6 +155,9 @@ class MainActivity : AppCompatActivity() {
     fun historyButtonClicked(v: View) {
 
     }
+
+    fun closeHistoryButtonClicked(view: View) {}
+    fun clearHistoryButtonClicked(view: View) {}
 }
 
 fun String.isNumber(): Boolean = this.toBigIntegerOrNull() != null
