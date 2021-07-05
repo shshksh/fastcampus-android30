@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.tvExpression.append(number)
-        // TODO: 2021-07-05 tvResult에 실시간으로 결과값 계산
+        binding.tvResult.text = calculateExpression()
     }
 
     private fun operatorButtonClicked(op: String) {
@@ -102,6 +102,28 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun calculateExpression(): String {
+        val expressionText = binding.tvExpression.text.split(" ")
+
+        if (hasOperator.not() || expressionText.size != 3) {
+            return ""
+        } else if (expressionText[0].isNumber().not() || expressionText[2].isNumber().not()) {
+            return ""
+        }
+
+        val operand1 = expressionText[0].toBigInteger()
+        val operand2 = expressionText[2].toBigInteger()
+
+        return when (expressionText[1]) {
+            "+" -> operand1.add(operand2).toString()
+            "-" -> operand1.subtract(operand2).toString()
+            "*" -> operand1.multiply(operand2).toString()
+            "/" -> operand1.divide(operand2).toString()
+            "%" -> operand1.mod(operand2).toString()
+            else -> ""
+        }
+    }
+
     fun clearButtonClicked(v: View) {
 
     }
@@ -110,3 +132,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
+
+fun String.isNumber(): Boolean = this.toBigIntegerOrNull() != null
