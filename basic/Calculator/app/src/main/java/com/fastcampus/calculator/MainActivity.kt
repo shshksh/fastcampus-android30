@@ -99,7 +99,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun resultButtonClicked(v: View) {
+        val expressionText = binding.tvExpression.text.split(" ")
 
+        if (binding.tvExpression.text.isEmpty() || expressionText.size == 1) {
+            return
+        }
+        if (expressionText.size != 3 && hasOperator) {
+            Toast.makeText(this, "아직 완성되지 않은 수식입니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (expressionText[0].isNumber().not() || expressionText[2].isNumber().not()) {
+            Toast.makeText(this, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val expression = binding.tvExpression.text.toString()
+        val result = binding.tvResult.text.toString()
+
+        binding.tvExpression.text = result
+        binding.tvResult.text = ""
+
+        isOperator = false
+        hasOperator = false
     }
 
     private fun calculateExpression(): String {
