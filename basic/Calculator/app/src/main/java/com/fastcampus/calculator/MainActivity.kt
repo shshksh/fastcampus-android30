@@ -8,20 +8,31 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.room.Room
 import com.fastcampus.calculator.databinding.ActivityMainBinding
+import com.fastcampus.calculator.databinding.ItemHistoryBinding
+import com.fastcampus.calculator.model.History
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private var isOperator = false
+    private lateinit var db: AppDatabase
 
+    private var isOperator = false
     private var hasOperator = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "historyDB"
+        ).build()
     }
 
     fun buttonClicked(v: View) {
@@ -121,6 +132,10 @@ class MainActivity : AppCompatActivity() {
 
         isOperator = false
         hasOperator = false
+
+        Thread {
+            db.historyDao().insertHistory(History(null, expression, result))
+        }.start()
     }
 
     private fun calculateExpression(): String {
@@ -153,11 +168,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun historyButtonClicked(v: View) {
+        binding.layoutHistory.isVisible = true
+        binding.layoutHistoryLinear.removeAllViews()
 
+        Thread {
+            db.historyDao().getAll().reversed().forEach { history ->
+                runOnUiThread {
+                    val historyBinding = ItemHistoryBinding.inflate(layoutInflater)
+                    historyBinding.tvExpression.text = history.expression
+                    historyBinding.tvResult.text = "= ${history.result}"
+
+                    binding.layoutHistoryLinear.addView(historyBinding.root)
+                }
+            }
+        }.start()
     }
 
-    fun closeHistoryButtonClicked(view: View) {}
-    fun clearHistoryButtonClicked(view: View) {}
+    fun closeHistoryButtonClicked(v: View) {
+        binding.layoutHistory.isVisible = false
+    }
+
+    fun clearHistoryButtonClicked(v: View) {
+        // TODO: 2021-07-05 DB에서 모든 기록 삭제
+        // TODO: 2021-07-05 뷰에서 모든 기록 삭제
+    }
 }
 
 fun String.isNumber(): Boolean = this.toBigIntegerOrNull() != null
