@@ -125,7 +125,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clearButtonClicked(v: View) {
-
+        binding.tvResult.text = ""
+        binding.tvExpression.text = ""
+        isOperator = false
+        hasOperator = false
     }
 
     fun historyButtonClicked(v: View) {
