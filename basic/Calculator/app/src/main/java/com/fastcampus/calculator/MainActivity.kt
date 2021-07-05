@@ -1,9 +1,13 @@
 package com.fastcampus.calculator
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.fastcampus.calculator.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -62,7 +66,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun operatorButtonClicked(op: String) {
+        if (binding.tvExpression.text.isEmpty()) {
+            return
+        }
 
+        when {
+            isOperator -> {
+                val text = binding.tvExpression.text.toString()
+                binding.tvExpression.text = text.dropLast(1).plus(op)
+            }
+            hasOperator -> {
+                Toast.makeText(this, "연산자는 한 번만 사용할 수 있습니다.", Toast.LENGTH_SHORT).show()
+                return
+            }
+            else -> {
+                binding.tvExpression.append(" $op")
+            }
+        }
+
+        val ssb = SpannableStringBuilder(binding.tvExpression.text)
+        ssb.setSpan(
+            ForegroundColorSpan(ContextCompat.getColor(this, R.color.green)),
+            binding.tvExpression.length() - 1,
+            binding.tvExpression.length(),
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        binding.tvExpression.text = ssb
+
+        isOperator = true
+        hasOperator = true
     }
 
     fun resultButtonClicked(v: View) {
