@@ -2,7 +2,9 @@ package com.fastcampus.electronicframe
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -14,9 +16,23 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val imageViewList: List<ImageView> by lazy {
+        listOf(binding.iv11, binding.iv12, binding.iv13, binding.iv21, binding.iv22, binding.iv23)
+    }
+
+    private val imageUriList = mutableListOf<Uri>()
+
     private val getPhotoLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != RESULT_OK)
+                return@registerForActivityResult
 
+            it.data?.data?.let { uri ->
+                imageUriList.add(uri)
+                imageViewList[imageUriList.lastIndex].setImageURI(uri)
+            } ?: run {
+                Toast.makeText(this@MainActivity, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
 
     private val requestReadExternalStorageLauncher =
