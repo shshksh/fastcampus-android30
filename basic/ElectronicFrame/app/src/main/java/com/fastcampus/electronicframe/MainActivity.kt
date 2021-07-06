@@ -1,5 +1,6 @@
 package com.fastcampus.electronicframe
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
@@ -12,6 +13,11 @@ import com.fastcampus.electronicframe.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    private val getPhotoLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+        }
 
     private val requestReadExternalStorageLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -51,7 +57,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigatePhotos() {
-
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+        }
+        getPhotoLauncher.launch(intent)
     }
 
     private fun showPermissionContextPopup() {
