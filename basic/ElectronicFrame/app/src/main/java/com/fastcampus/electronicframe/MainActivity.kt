@@ -28,6 +28,10 @@ class MainActivity : AppCompatActivity() {
                 return@registerForActivityResult
 
             it.data?.data?.let { uri ->
+                if (imageUriList.size >= 6) {
+                    Toast.makeText(this@MainActivity, "이미 사진이 꽉 찼습니다.", Toast.LENGTH_SHORT).show()
+                    return@registerForActivityResult
+                }
                 imageUriList.add(uri)
                 imageViewList[imageUriList.lastIndex].setImageURI(uri)
             } ?: run {
