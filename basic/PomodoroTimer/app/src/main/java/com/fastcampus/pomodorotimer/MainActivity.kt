@@ -52,12 +52,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                timer?.cancel()
-                timer = null
+                stopCountDown()
             }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                startCountDown()
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                if (seekBar.progress == 0)
+                    stopCountDown()
+                else
+                    startCountDown()
             }
         })
     }
@@ -88,6 +90,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private fun stopCountDown() {
+        timer?.cancel()
+        timer = null
+        soundPool.autoPause()
+    }
+
     private fun completeCountDown() {
         updateRemainTime(0L)
         updateSeekbar(0L)
@@ -101,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateRemainTime(remainMillis: Long) {
         val remainSeconds = remainMillis / 1000
 
-        binding.tvRemainMinutes.text = "%02d".format(remainSeconds / 60)
+        binding.tvRemainMinutes.text = "%02d'".format(remainSeconds / 60)
         binding.tvRemainSeconds.text = "%02d".format(remainSeconds % 60)
     }
 
