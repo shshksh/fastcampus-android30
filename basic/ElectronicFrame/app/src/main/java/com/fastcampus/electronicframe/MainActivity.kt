@@ -1,7 +1,6 @@
 package com.fastcampus.electronicframe
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
@@ -9,7 +8,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import com.fastcampus.electronicframe.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -23,20 +21,16 @@ class MainActivity : AppCompatActivity() {
     private val imageUriList = mutableListOf<Uri>()
 
     private val getPhotoLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode != RESULT_OK)
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri == null)
                 return@registerForActivityResult
 
-            it.data?.data?.let { uri ->
-                if (imageUriList.size >= 6) {
-                    Toast.makeText(this@MainActivity, "이미 사진이 꽉 찼습니다.", Toast.LENGTH_SHORT).show()
-                    return@registerForActivityResult
-                }
-                imageUriList.add(uri)
-                imageViewList[imageUriList.lastIndex].setImageURI(uri)
-            } ?: run {
-                Toast.makeText(this@MainActivity, "사진을 가져오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            if (imageUriList.size >= 6) {
+                Toast.makeText(this@MainActivity, "이미 사진이 꽉 찼습니다.", Toast.LENGTH_SHORT).show()
+                return@registerForActivityResult
             }
+            imageUriList.add(uri)
+            imageViewList[imageUriList.lastIndex].setImageURI(uri)
         }
 
     private val requestReadExternalStorageLauncher =
@@ -59,20 +53,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun initAddPhotoButton() {
         binding.btnAddPhoto.setOnClickListener {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    navigatePhotos()
-                }
-                shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-                    showPermissionContextPopup()
-                }
-                else -> {
-                    requestReadExternalStorageLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
+//            when {
+//                ContextCompat.checkSelfPermission(
+//                    this,
+//                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+//                ) == PackageManager.PERMISSION_GRANTED -> {
+//                    navigatePhotos()
+//                }
+//                shouldShowRequestPermissionRationale(android.Manifest.permission.READ_EXTERNAL_STORAGE) -> {
+//                    showPermissionContextPopup()
+//                }
+//                else -> {
+//                    requestReadExternalStorageLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+//                }
+//            }
+            navigatePhotos()
         }
     }
 
@@ -88,10 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigatePhotos() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-        }
-        getPhotoLauncher.launch(intent)
+        getPhotoLauncher.launch("image/*")
     }
 
     private fun showPermissionContextPopup() {
