@@ -1,5 +1,6 @@
 package com.fastcampus.pomodorotimer
 
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.SeekBar
@@ -12,12 +13,20 @@ class MainActivity : AppCompatActivity() {
 
     private var timer: CountDownTimer? = null
 
+    private val soundPool = SoundPool.Builder().build()
+
+    private var tickingSoundId: Int? = null
+
+    private var bellSoundId: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         bindViews()
+
+        initSounds()
     }
 
     private fun bindViews() {
@@ -35,9 +44,17 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 timer = createCountDownTimer(binding.sbTimer.progress * 1000L * 60L)
                 timer?.start()
-            }
 
+                tickingSoundId?.let {
+                    soundPool.play(it, 1f, 1f, 0, -1, 1f)
+                }
+            }
         })
+    }
+
+    private fun initSounds() {
+        tickingSoundId = soundPool.load(this, R.raw.timer_ticking, 1)
+        bellSoundId = soundPool.load(this, R.raw.timer_bell, 1)
     }
 
     private fun createCountDownTimer(initialMillis: Long) =
