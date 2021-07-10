@@ -1,6 +1,7 @@
 package com.fastcampus.recorder
 
 import android.Manifest
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +15,8 @@ class MainActivity : AppCompatActivity() {
     private var state = State.BEFORE_RECORDING
 
     private var recorder: MediaRecorder? = null
+
+    private var player: MediaPlayer? = null
 
     private val recordingFilePath: String by lazy {
         "${externalCacheDir?.absolutePath}/recording.3gp"
@@ -59,6 +62,19 @@ class MainActivity : AppCompatActivity() {
             release()
         }
         recorder = null
+    }
+
+    private fun startPlaying() {
+        player = MediaPlayer().apply {
+            setDataSource(recordingFilePath)
+            prepare()
+        }
+        player?.start()
+    }
+
+    private fun stopPlaying() {
+        player?.release()
+        player = null
     }
 
 }
