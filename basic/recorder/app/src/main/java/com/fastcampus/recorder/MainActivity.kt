@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private var state = State.BEFORE_RECORDING
         set(value) {
             field = value
+            binding.btnReset.isEnabled = value == State.AFTER_RECORDING || value == State.ON_PLAYING
             binding.btnRecord.updateIconWithState(value)
         }
 
@@ -39,6 +40,8 @@ class MainActivity : AppCompatActivity() {
 
         requestAudioPermission()
         initViews()
+        bindViews()
+        initVariables()
     }
 
     private fun requestAudioPermission() {
@@ -47,6 +50,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         binding.btnRecord.updateIconWithState(state)
+    }
+
+    private fun bindViews() {
+        when (state) {
+            State.BEFORE_RECORDING -> startRecording()
+            State.ON_RECORDING -> stopRecording()
+            State.AFTER_RECORDING -> startPlaying()
+            State.ON_PLAYING -> stopPlaying()
+        }
+
+        binding.btnReset.setOnClickListener {
+            stopPlaying()
+            state = State.BEFORE_RECORDING
+        }
+    }
+
+    private fun initVariables() {
+        state = State.BEFORE_RECORDING
     }
 
     private fun startRecording() {
