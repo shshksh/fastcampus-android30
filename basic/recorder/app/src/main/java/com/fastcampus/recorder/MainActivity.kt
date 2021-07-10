@@ -13,6 +13,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private var state = State.BEFORE_RECORDING
+        set(value) {
+            field = value
+            binding.btnRecord.updateIconWithState(value)
+        }
 
     private var recorder: MediaRecorder? = null
 
@@ -54,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             prepare()
         }
         recorder?.start()
+        state = State.ON_RECORDING
     }
 
     private fun stopRecording() {
@@ -62,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             release()
         }
         recorder = null
+        state = State.AFTER_RECORDING
     }
 
     private fun startPlaying() {
@@ -70,11 +76,13 @@ class MainActivity : AppCompatActivity() {
             prepare()
         }
         player?.start()
+        state = State.ON_PLAYING
     }
 
     private fun stopPlaying() {
         player?.release()
         player = null
+        state = State.AFTER_RECORDING
     }
 
 }
