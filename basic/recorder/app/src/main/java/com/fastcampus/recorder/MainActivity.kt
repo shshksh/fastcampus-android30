@@ -53,11 +53,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindViews() {
-        when (state) {
-            State.BEFORE_RECORDING -> startRecording()
-            State.ON_RECORDING -> stopRecording()
-            State.AFTER_RECORDING -> startPlaying()
-            State.ON_PLAYING -> stopPlaying()
+        binding.soundVisualizerView.onRequestCurrentAmplitude = {
+            recorder?.maxAmplitude ?: 0
+        }
+
+        binding.btnRecord.setOnClickListener {
+            when (state) {
+                State.BEFORE_RECORDING -> startRecording()
+                State.ON_RECORDING -> stopRecording()
+                State.AFTER_RECORDING -> startPlaying()
+                State.ON_PLAYING -> stopPlaying()
+            }
         }
 
         binding.btnReset.setOnClickListener {
@@ -79,6 +85,8 @@ class MainActivity : AppCompatActivity() {
             prepare()
         }
         recorder?.start()
+        binding.soundVisualizerView.startVisualizing(false)
+        binding.countUpTextView.startCountUp()
         state = State.ON_RECORDING
     }
 
@@ -88,6 +96,8 @@ class MainActivity : AppCompatActivity() {
             release()
         }
         recorder = null
+        binding.soundVisualizerView.stopVisualizing()
+        binding.countUpTextView.stopCountUp()
         state = State.AFTER_RECORDING
     }
 
@@ -97,12 +107,16 @@ class MainActivity : AppCompatActivity() {
             prepare()
         }
         player?.start()
+        binding.soundVisualizerView.startVisualizing(true)
+        binding.countUpTextView.startCountUp()
         state = State.ON_PLAYING
     }
 
     private fun stopPlaying() {
         player?.release()
         player = null
+        binding.soundVisualizerView.stopVisualizing()
+        binding.countUpTextView.stopCountUp()
         state = State.AFTER_RECORDING
     }
 
