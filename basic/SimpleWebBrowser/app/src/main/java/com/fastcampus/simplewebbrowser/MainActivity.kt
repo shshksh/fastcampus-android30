@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         binding.webView.apply {
             webViewClient = WebViewClient()
             settings.javaScriptEnabled = true
-            loadUrl("http://www.google.com")
+            loadUrl(DEFAULT_URL)
         }
     }
 
@@ -37,6 +37,31 @@ class MainActivity : AppCompatActivity() {
                 }
                 false
             }
+
+            btnBack.setOnClickListener {
+                webView.goBack()
+            }
+
+            btnForward.setOnClickListener {
+                webView.goForward()
+            }
+
+            btnHome.setOnClickListener {
+                webView.loadUrl(DEFAULT_URL)
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        if (binding.webView.canGoBack()) {
+            binding.webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    companion object {
+
+        private const val DEFAULT_URL = "http://www.google.com"
     }
 }
