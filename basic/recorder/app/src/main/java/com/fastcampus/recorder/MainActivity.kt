@@ -68,6 +68,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnReset.setOnClickListener {
             stopPlaying()
+            binding.soundVisualizerView.clearVisualization()
+            binding.countUpTextView.clearCountTime()
             state = State.BEFORE_RECORDING
         }
     }
@@ -105,6 +107,10 @@ class MainActivity : AppCompatActivity() {
         player = MediaPlayer().apply {
             setDataSource(recordingFilePath)
             prepare()
+        }
+        player?.setOnCompletionListener {
+            stopPlaying()
+            state = State.AFTER_RECORDING
         }
         player?.start()
         binding.soundVisualizerView.startVisualizing(true)

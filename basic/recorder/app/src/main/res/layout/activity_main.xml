@@ -32,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text="00:00"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/btn_record"
         app:layout_constraintEnd_toEndOf="@id/btn_record"
         app:layout_constraintStart_toStartOf="@id/btn_record" />
@@ -41,8 +42,11 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginBottom="50dp"
+        android:padding="25dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/ic_record" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
