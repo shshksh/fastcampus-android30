@@ -20,12 +20,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         createNotificationChannel()
 
+        val type = removeMessage.data["type"]?.let { NotificationType.valueOf(it) }
         val title = removeMessage.data["title"]
         val message = removeMessage.data["message"]
 
-        val notificationBuilder = createNotificationBuilder(title, message)
+        type ?: return
 
-        notifyMessage(1, notificationBuilder.build())
+        val notification = createNotification(type, title, message)
+
+        notifyMessage(type.id, notification)
     }
 
     private fun notifyMessage(id: Int, notification: Notification) {
@@ -33,14 +36,37 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .notify(id, notification)
     }
 
-    private fun createNotificationBuilder(
+    private fun createNotification(
+        type: NotificationType,
         title: String?,
         message: String?
-    ) = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-        .setContentTitle(title)
-        .setContentText(message)
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+    ): Notification {
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        when (type) {
+            NotificationType.NORMAL -> Unit
+            NotificationType.EXPANDABLE -> {
+                notificationBuilder.setStyle(
+                    NotificationCompat.BigTextStyle()
+                        .bigText(
+                            """😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱😴
+                                |😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂
+                                |🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😀
+                                |😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱
+                                |😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤""".trimMargin()
+                        )
+                )
+            }
+            NotificationType.CUSTOM -> {
+                TODO()
+            }
+        }
+        return notificationBuilder.build()
+    }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
