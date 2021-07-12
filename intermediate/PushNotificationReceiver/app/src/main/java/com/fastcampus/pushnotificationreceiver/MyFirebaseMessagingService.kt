@@ -40,53 +40,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .notify(id, notification)
     }
 
-    private fun createNotification(
-        type: NotificationType,
-        title: String?,
-        message: String?
-    ): Notification {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra("notificationType", "${type.title} 타입")
-            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        }
-        val pendingIntent = PendingIntent.getActivity(this, type.id, intent, FLAG_UPDATE_CURRENT)
-
-        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_baseline_notifications_24)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-
-        when (type) {
-            NotificationType.NORMAL -> Unit
-            NotificationType.EXPANDABLE -> {
-                notificationBuilder.setStyle(
-                    NotificationCompat.BigTextStyle()
-                        .bigText(
-                            """😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱😴
-                                |😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂
-                                |🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😀
-                                |😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱
-                                |😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤""".trimMargin()
-                        )
-                )
-            }
-            NotificationType.CUSTOM -> {
-                notificationBuilder
-                    .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-                    .setCustomContentView(
-                        RemoteViews(packageName, R.layout.view_custom_notification).apply {
-                            setTextViewText(R.id.tv_title, title)
-                            setTextViewText(R.id.tv_message, message)
-                        }
-                    )
-            }
-        }
-        return notificationBuilder.build()
-    }
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -99,6 +52,67 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(channel)
         }
+    }
+
+    private fun createNotification(
+        type: NotificationType,
+        title: String?,
+        message: String?
+    ): Notification {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("notificationType", "${type.title} 타입")
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        val pendingIntent = PendingIntent.getActivity(this, type.id, intent, FLAG_UPDATE_CURRENT)
+
+        val notificationBuilder = createNotificationBuilder(title, message, pendingIntent)
+
+        when (type) {
+            NotificationType.NORMAL -> Unit
+            NotificationType.EXPANDABLE -> setupExpandableNotification(notificationBuilder)
+            NotificationType.CUSTOM -> setupCustomNotification(notificationBuilder, title, message)
+        }
+        return notificationBuilder.build()
+    }
+
+    private fun createNotificationBuilder(
+        title: String?,
+        message: String?,
+        pendingIntent: PendingIntent?
+    ) = NotificationCompat.Builder(this, CHANNEL_ID)
+        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+        .setContentTitle(title)
+        .setContentText(message)
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setContentIntent(pendingIntent)
+        .setAutoCancel(true)
+
+    private fun setupExpandableNotification(notificationBuilder: NotificationCompat.Builder) {
+        notificationBuilder.setStyle(
+            NotificationCompat.BigTextStyle()
+                .bigText(
+                    """😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱😴
+                    |😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😀😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂
+                    |🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😀
+                    |😁😂🤣😃😄😅😆😉😊😋😎😍😘🥰😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫🥱
+                    |😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤""".trimMargin()
+                )
+        )
+    }
+
+    private fun setupCustomNotification(
+        notificationBuilder: NotificationCompat.Builder,
+        title: String?,
+        message: String?
+    ) {
+        notificationBuilder
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setCustomContentView(
+                RemoteViews(packageName, R.layout.view_custom_notification).apply {
+                    setTextViewText(R.id.tv_title, title)
+                    setTextViewText(R.id.tv_message, message)
+                }
+            )
     }
 
     companion object {
