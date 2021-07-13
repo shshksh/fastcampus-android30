@@ -53,7 +53,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayQuoteListPager(quoteList: List<Quote>, isNameRevealed: Boolean) {
-        binding.viewPager.adapter = QuoteListPagerAdapter(quoteList, isNameRevealed)
+        val adapter = QuoteListPagerAdapter(quoteList, isNameRevealed)
+        binding.viewPager.adapter = adapter
+        binding.viewPager.setCurrentItem(adapter.itemCount / 2, false)
     }
 
     private fun parseQuoteListJson(json: String): List<Quote> {
