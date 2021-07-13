@@ -1,5 +1,6 @@
 package com.fastcampus.thoughtoftheday
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,11 +27,12 @@ class QuoteListPagerAdapter(
     class QuoteViewHolder(private val binding: ItemQuoteBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        @SuppressLint("SetTextI18n")
         fun bind(quote: Quote, isNameRevealed: Boolean) {
             with(binding) {
-                tvQuote.text = quote.quote
+                tvQuote.text = """"${quote.quote}""""
                 if (isNameRevealed) {
-                    tvName.text = quote.name
+                    tvName.text = "- ${quote.name}"
                     tvName.visibility = View.VISIBLE
                 } else {
                     tvName.visibility = View.GONE

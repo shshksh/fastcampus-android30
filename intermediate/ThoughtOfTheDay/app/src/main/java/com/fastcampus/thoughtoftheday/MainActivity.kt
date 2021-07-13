@@ -1,6 +1,7 @@
 package com.fastcampus.thoughtoftheday
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.fastcampus.thoughtoftheday.databinding.ActivityMainBinding
 import com.google.firebase.ktx.Firebase
@@ -8,6 +9,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.absoluteValue
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +20,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initViews()
         initData()
+    }
+
+    private fun initViews() {
+        binding.viewPager.setPageTransformer { page, position ->
+            when {
+                position.absoluteValue >= 1.0f -> page.alpha = 0f
+                position == 0f -> page.alpha = 1f
+                else -> page.alpha = 1 - 2 * position.absoluteValue
+            }
+        }
     }
 
     private fun initData() {
@@ -34,6 +47,7 @@ class MainActivity : AppCompatActivity() {
                 val isNameRevealed = remoteConfig.getBoolean("is_name_revealed")
 
                 displayQuoteListPager(quoteList, isNameRevealed)
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
