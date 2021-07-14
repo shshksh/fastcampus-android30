@@ -53,6 +53,35 @@ class MainActivity : AppCompatActivity() {
         return model
     }
 
+    private fun fetchDataFromSharedPreferences(): AlarmDisplayModel {
+        val pref = getSharedPreferences(SHARED_PREFERENCE_TIME, Context.MODE_PRIVATE)
+
+        val timeDBValue = pref.getString(ALARM_KEY, "9:30") ?: "9:30"
+        val onOffDBValue = pref.getBoolean(ONOFF_KEY, false)
+        val alarmData = timeDBValue.split(":")
+
+        val alarmModel = AlarmDisplayModel(
+            hour = alarmData[0].toInt(),
+            minute = alarmData[1].toInt(),
+            onOff = onOffDBValue
+        )
+
+/*        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            ALARM_REQUEST_CODE,
+            Intent(this, AlarmReceiver::class.java),
+            PendingIntent.FLAG_NO_CREATE
+        )
+
+        if ((pendingIntent == null) and alarmModel.onOff) {
+            alarmModel.onOff = false
+        } else if ((pendingIntent != null) and alarmModel.onOff.not()) {
+            pendingIntent.cancel()
+        }*/
+
+        return alarmModel
+    }
+
     companion object {
 
         private const val SHARED_PREFERENCE_TIME = "time"
