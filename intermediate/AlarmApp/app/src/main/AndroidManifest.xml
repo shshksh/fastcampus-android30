@@ -11,8 +11,7 @@
         android:theme="@style/Theme.AlarmApp">
         <receiver
             android:name=".AlarmReceiver"
-            android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="false" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
