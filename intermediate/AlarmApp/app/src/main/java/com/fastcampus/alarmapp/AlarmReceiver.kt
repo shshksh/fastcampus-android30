@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
 class AlarmReceiver : BroadcastReceiver() {
-
     override fun onReceive(context: Context, intent: Intent) {
         createNotificationChannel(context)
 
@@ -42,7 +41,6 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     companion object {
-
         private const val NOTIFICATION_CHANNEL_ID = "1000"
         private const val NOTIFICATION_ID = 100
     }

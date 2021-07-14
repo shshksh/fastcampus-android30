@@ -11,7 +11,6 @@ import com.fastcampus.alarmapp.databinding.ActivityMainBinding
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private fun initOnOffButton() {
         binding.btnOnOff.setOnClickListener {
             val model = it.tag as? AlarmDisplayModel ?: return@setOnClickListener
+
             val newModel = saveAlarmModel(model.hour, model.minute, model.onOff.not())
             renderView(newModel)
 
@@ -148,7 +148,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-
         private const val SHARED_PREFERENCE_TIME = "time"
         private const val ALARM_KEY = "alarm"
         private const val ONOFF_KEY = "ofOff"
