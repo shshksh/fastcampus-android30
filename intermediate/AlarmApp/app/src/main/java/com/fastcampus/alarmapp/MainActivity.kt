@@ -16,6 +16,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val model = fetchDataFromSharedPreferences()
+        renderView(model)
+
         initChangeAlarmTimeButton()
     }
 
@@ -27,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 { view, hourOfDay, minute ->
                     val model = saveAlarmModel(hourOfDay, minute, false)
+                    renderView(model)
                 },
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE),
@@ -80,6 +84,15 @@ class MainActivity : AppCompatActivity() {
         }*/
 
         return alarmModel
+    }
+
+    private fun renderView(model: AlarmDisplayModel) {
+        with(binding) {
+            tvAmPm.text = model.amPmText
+            tvTime.text = model.timeText
+            btnOnOff.text = model.onOffText
+            btnOnOff.tag = model
+        }
     }
 
     companion object {
