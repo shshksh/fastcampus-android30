@@ -6,10 +6,13 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.fastcampus.bookreview.adapter.BookAdapter
+import com.fastcampus.bookreview.adapter.HistoryAdapter
 import com.fastcampus.bookreview.api.BookService
 import com.fastcampus.bookreview.databinding.ActivityMainBinding
 import com.fastcampus.bookreview.model.BestSellerDto
+import com.fastcampus.bookreview.model.History
 import com.fastcampus.bookreview.model.SearchBookDto
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,8 +25,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var adapter: BookAdapter
+    private lateinit var historyAdapter: HistoryAdapter
 
     private lateinit var bookService: BookService
+
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +37,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initBookRecyclerView()
+        initHistoryRecyclerView()
+
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "BookSearchDB"
+        ).build()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://book.interpark.com")
@@ -72,6 +85,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initBookRecyclerView() {
+        adapter = BookAdapter()
+        binding.rvBookList.adapter = adapter
+        binding.rvBookList.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun initHistoryRecyclerView() {
+        historyAdapter = HistoryAdapter { deleteSearchKeyword(it) }
+        binding.rvHistory.adapter = historyAdapter
+        binding.rvHistory.layoutManager = LinearLayoutManager(this)
+    }
+
     private fun search(keyword: String) {
         bookService.getBooksByName(getString(R.string.interparkAPIKey), keyword)
             .enqueue(object : Callback<SearchBookDto> {
@@ -82,6 +107,8 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful.not())
                         return
 
+                    saveSearchKeyword(keyword)
+
                     adapter.submitList(response.body()?.bookList.orEmpty())
                 }
 
@@ -91,10 +118,16 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    private fun initBookRecyclerView() {
-        adapter = BookAdapter()
-        binding.rvBookList.adapter = adapter
-        binding.rvBookList.layoutManager = LinearLayoutManager(this)
+    private fun saveSearchKeyword(keyword: String) {
+        Thread {
+            db.historyDao().insertHistory(History(null, keyword))
+        }.start()
+    }
+
+    private fun deleteSearchKeyword(keyword: String) {
+        Thread {
+            db.historyDao().delete(keyword)
+        }.start()
     }
 
     companion object {
