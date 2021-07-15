@@ -3,7 +3,10 @@ package com.fastcampus.bookreview
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.fastcampus.bookreview.adapter.BookAdapter
 import com.fastcampus.bookreview.api.BookService
+import com.fastcampus.bookreview.databinding.ActivityMainBinding
 import com.fastcampus.bookreview.model.BestSellerDto
 import retrofit2.Call
 import retrofit2.Callback
@@ -12,9 +15,17 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    private lateinit var adapter: BookAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        initBookRecyclerView()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://book.interpark.com")
@@ -38,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                         it.bookList.forEach { book ->
                             Log.d(TAG, book.toString())
                         }
+                        adapter.submitList(it.bookList)
                     }
                 }
 
@@ -45,6 +57,12 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "onFailure: $t")
                 }
             })
+    }
+
+    private fun initBookRecyclerView() {
+        adapter = BookAdapter()
+        binding.rvBookList.adapter = adapter
+        binding.rvBookList.layoutManager = LinearLayoutManager(this)
     }
 
     companion object {
