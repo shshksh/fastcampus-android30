@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.fastcampus.bookreview.databinding.ItemBookBinding
 import com.fastcampus.bookreview.model.Book
 
@@ -23,7 +24,13 @@ class BookAdapter : ListAdapter<Book, BookAdapter.BookItemViewHolder>(diffUtil) 
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(bookModel: Book) {
-            binding.tvTitle.text = bookModel.title
+            with(binding) {
+                tvTitle.text = bookModel.title
+                tvDescription.text = bookModel.description
+                Glide.with(root)
+                    .load(bookModel.coverSmallUrl)
+                    .into(ivCover)
+            }
         }
     }
 
