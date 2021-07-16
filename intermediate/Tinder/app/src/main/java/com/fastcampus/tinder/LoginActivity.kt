@@ -3,6 +3,7 @@ package com.fastcampus.tinder
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.fastcampus.tinder.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -26,6 +27,9 @@ class LoginActivity : AppCompatActivity() {
         with(binding) {
             btnSignUp.setOnClickListener { trySignUp() }
             btnLogin.setOnClickListener { tryLogin() }
+
+            etEmail.addTextChangedListener { checkEmailPasswordInput() }
+            etPassword.addTextChangedListener { checkEmailPasswordInput() }
         }
     }
 
@@ -55,6 +59,12 @@ class LoginActivity : AppCompatActivity() {
                     showToast("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.")
                 }
             }
+    }
+
+    private fun ActivityLoginBinding.checkEmailPasswordInput() {
+        val enable = etEmail.text.isNotEmpty() && etPassword.text.isNotEmpty()
+        btnSignUp.isEnabled = enable
+        btnLogin.isEnabled = enable
     }
 
     private fun showToast(message: String) {
