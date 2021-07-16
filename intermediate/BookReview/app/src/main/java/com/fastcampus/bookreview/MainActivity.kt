@@ -18,19 +18,17 @@ import com.fastcampus.bookreview.model.SearchBookDto
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var adapter: BookAdapter
+    private lateinit var bookAdapter: BookAdapter
     private lateinit var historyAdapter: HistoryAdapter
 
-    private lateinit var bookService: BookService
+    private val bookService: BookService by lazy { com.fastcampus.bookreview.api.bookService }
 
-    private lateinit var db: AppDatabase
+    private val db by lazy { getAppDatabase(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,49 +37,18 @@ class MainActivity : AppCompatActivity() {
 
         initBookRecyclerView()
         initHistoryRecyclerView()
+        initSearchEditText()
 
-        db = getAppDatabase(applicationContext)
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://book.interpark.com")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        bookService = retrofit.create(BookService::class.java)
-
-        bookService.getBestSellerBooks(getString(R.string.interparkAPIKey))
-            .enqueue(object : Callback<BestSellerDto> {
-                override fun onResponse(
-                    call: Call<BestSellerDto>,
-                    response: Response<BestSellerDto>
-                ) {
-                    if (response.isSuccessful.not())
-                        return
-
-                    response.body()?.let {
-                        Log.d(TAG, it.toString())
-
-                        it.bookList.forEach { book ->
-                            Log.d(TAG, book.toString())
-                        }
-                        adapter.submitList(it.bookList)
-                    }
-                }
-
-                override fun onFailure(call: Call<BestSellerDto>, t: Throwable) {
-                    Log.d(TAG, "onFailure: $t")
-                }
-            })
-
+        loadBestSeller()
     }
 
     private fun initBookRecyclerView() {
-        adapter = BookAdapter {
+        bookAdapter = BookAdapter {
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("bookModel", it)
             startActivity(intent)
         }
-        binding.rvBookList.adapter = adapter
+        binding.rvBookList.adapter = bookAdapter
         binding.rvBookList.layoutManager = LinearLayoutManager(this)
     }
 
@@ -90,7 +57,6 @@ class MainActivity : AppCompatActivity() {
         binding.rvHistory.adapter = historyAdapter
         binding.rvHistory.layoutManager = LinearLayoutManager(this)
 
-        initSearchEditText()
     }
 
     private fun initSearchEditText() {
@@ -109,6 +75,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadBestSeller() {
+        bookService.getBestSellerBooks(getString(R.string.interparkAPIKey))
+            .enqueue(object : Callback<BestSellerDto> {
+                override fun onResponse(
+                    call: Call<BestSellerDto>,
+                    response: Response<BestSellerDto>
+                ) {
+                    if (response.isSuccessful.not())
+                        return
+
+                    response.body()?.let {
+                        bookAdapter.submitList(it.bookList)
+                    }
+                }
+
+                override fun onFailure(call: Call<BestSellerDto>, t: Throwable) {
+                    Log.d(TAG, "onFailure: $t")
+                }
+            })
+    }
+
     private fun search(keyword: String) {
         bookService.getBooksByName(getString(R.string.interparkAPIKey), keyword)
             .enqueue(object : Callback<SearchBookDto> {
@@ -122,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                     hideHistoryView()
                     saveSearchKeyword(keyword)
 
-                    adapter.submitList(response.body()?.bookList.orEmpty())
+                    bookAdapter.submitList(response.body()?.bookList.orEmpty())
                 }
 
                 override fun onFailure(call: Call<SearchBookDto>, t: Throwable) {
