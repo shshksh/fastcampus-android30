@@ -9,7 +9,8 @@ import com.bumptech.glide.Glide
 import com.fastcampus.bookreview.databinding.ItemBookBinding
 import com.fastcampus.bookreview.model.Book
 
-class BookAdapter : ListAdapter<Book, BookAdapter.BookItemViewHolder>(diffUtil) {
+class BookAdapter(private val itemClickListener: (Book) -> Unit) :
+    ListAdapter<Book, BookAdapter.BookItemViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = BookItemViewHolder(
         ItemBookBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -27,6 +28,9 @@ class BookAdapter : ListAdapter<Book, BookAdapter.BookItemViewHolder>(diffUtil) 
             with(binding) {
                 tvTitle.text = bookModel.title
                 tvDescription.text = bookModel.description
+                root.setOnClickListener {
+                    itemClickListener(bookModel)
+                }
                 Glide.with(root)
                     .load(bookModel.coverSmallUrl)
                     .into(ivCover)
