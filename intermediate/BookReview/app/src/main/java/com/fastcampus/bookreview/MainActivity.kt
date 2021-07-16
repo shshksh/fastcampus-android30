@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.room.Room
 import com.fastcampus.bookreview.adapter.BookAdapter
 import com.fastcampus.bookreview.adapter.HistoryAdapter
 import com.fastcampus.bookreview.api.BookService
@@ -41,11 +40,7 @@ class MainActivity : AppCompatActivity() {
         initBookRecyclerView()
         initHistoryRecyclerView()
 
-        db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "BookSearchDB"
-        ).build()
+        db = getAppDatabase(applicationContext)
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://book.interpark.com")
