@@ -1,5 +1,6 @@
 package com.fastcampus.bookreview
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -80,7 +81,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initBookRecyclerView() {
-        adapter = BookAdapter()
+        adapter = BookAdapter {
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("bookModel", it)
+            startActivity(intent)
+        }
         binding.rvBookList.adapter = adapter
         binding.rvBookList.layoutManager = LinearLayoutManager(this)
     }
