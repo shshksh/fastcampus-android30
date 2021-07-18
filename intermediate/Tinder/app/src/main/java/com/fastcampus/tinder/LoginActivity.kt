@@ -111,6 +111,11 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        saveUserID()
+        finish()
+    }
+
+    private fun saveUserID() {
         val userId = auth.currentUser?.uid.orEmpty()
         val currentUserDB = Firebase.database.reference.child("Users").child(userId)
         val user = mutableMapOf<String, Any>()
