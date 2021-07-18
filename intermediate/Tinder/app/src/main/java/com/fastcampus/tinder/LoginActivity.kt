@@ -2,7 +2,6 @@ package com.fastcampus.tinder
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.facebook.CallbackManager
@@ -13,6 +12,7 @@ import com.fastcampus.tinder.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
@@ -30,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
                 auth.signInWithCredential(credential)
                     .addOnCompleteListener(this@LoginActivity) { task ->
                         if (task.isSuccessful) {
-                            finish()
+                            handleSuccessLogin()
                         } else {
                             showToast("페이스북 로그인이 실패했습니다.")
                         }
@@ -87,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this@LoginActivity) { task ->
                 if (task.isSuccessful) {
-                    finish()
+                    handleSuccessLogin()
                 } else {
                     showToast("로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.")
                 }
@@ -100,17 +100,22 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.isEnabled = enable
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(
-            this@LoginActivity,
-            message,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun handleSuccessLogin() {
+        if (auth.currentUser == null) {
+            showToast("로그인에 실패했습니다.")
+            return
+        }
+
+        val userId = auth.currentUser?.uid.orEmpty()
+        val currentUserDB = Firebase.database.reference.child("Users").child(userId)
+        val user = mutableMapOf<String, Any>()
+        user["userId"] = userId
+        currentUserDB.updateChildren(user)
     }
 
 }
