@@ -1,6 +1,7 @@
 package com.fastcampus.tinder
 
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -11,14 +12,19 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.CardStackListener
+import com.yuyakaido.android.cardstackview.Direction
 
-class LikeActivity : AppCompatActivity() {
+class LikeActivity : AppCompatActivity(), CardStackListener {
 
     private lateinit var binding: ActivityLikeBinding
 
     private val auth by lazy { FirebaseAuth.getInstance() }
 
     private val userDB by lazy { Firebase.database.reference.child("Users") }
+
+    private val cardItemAdapter by lazy { CardItemAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +40,17 @@ class LikeActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
 
+        initViews()
+    }
+
+    private fun initViews() {
+        binding.cardStackView.apply {
+            layoutManager = CardStackLayoutManager(this@LikeActivity, this@LikeActivity)
+            adapter = cardItemAdapter
+        }
     }
 
     private fun showNameInputDialog() {
@@ -74,4 +86,18 @@ class LikeActivity : AppCompatActivity() {
 
         return auth.currentUser?.uid.orEmpty()
     }
+
+    override fun onCardDragging(direction: Direction?, ratio: Float) {}
+
+    override fun onCardSwiped(direction: Direction?) {
+        
+    }
+
+    override fun onCardRewound() {}
+
+    override fun onCardCanceled() {}
+
+    override fun onCardAppeared(view: View?, position: Int) {}
+
+    override fun onCardDisappeared(view: View?, position: Int) {}
 }
