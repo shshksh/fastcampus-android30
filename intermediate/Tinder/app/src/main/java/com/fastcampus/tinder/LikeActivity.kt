@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.fastcampus.tinder.databinding.ActivityLikeBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -25,6 +26,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
     private val userDB by lazy { Firebase.database.reference.child("Users") }
 
     private val cardItemAdapter by lazy { CardItemAdapter() }
+    private val cardItems = mutableListOf<CardItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
                     showNameInputDialog()
                     return
                 }
+
+                getUnselectedUsers()
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -50,6 +54,49 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         binding.cardStackView.apply {
             layoutManager = CardStackLayoutManager(this@LikeActivity, this@LikeActivity)
             adapter = cardItemAdapter
+        }
+    }
+
+    private fun getUnselectedUsers() {
+        userDB.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if (isUnselectedUser(snapshot)) {
+                    addNewUser(snapshot)
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                updateUserName(snapshot)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun isUnselectedUser(snapshot: DataSnapshot) =
+        (snapshot.child("userId").value != getCurrentUserID()
+                && snapshot.child("likedBy").child("like").hasChild(getCurrentUserID()).not()
+                && snapshot.child("likedBy").child("disLike").hasChild(getCurrentUserID()).not())
+
+    private fun addNewUser(snapshot: DataSnapshot) {
+        val userId = snapshot.child("userId").value.toString()
+        var name = "undecided"
+        if (snapshot.child("name").value != null) {
+            name = snapshot.child("name").value.toString()
+        }
+
+        cardItems.add(CardItem(userId, name))
+        cardItemAdapter.submitList(cardItems)
+    }
+
+    private fun updateUserName(snapshot: DataSnapshot) {
+        cardItems.find { it.userId == snapshot.key }?.let {
+            it.name = snapshot.child("name").value.toString()
+            cardItemAdapter.submitList(cardItems)
         }
     }
 
@@ -76,6 +123,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         user["userId"] = userId
         user["name"] = name
         currentUserDB.updateChildren(user)
+
+        getUnselectedUsers()
     }
 
     private fun getCurrentUserID(): String {
@@ -90,7 +139,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
     override fun onCardDragging(direction: Direction?, ratio: Float) {}
 
     override fun onCardSwiped(direction: Direction?) {
-        
+
     }
 
     override fun onCardRewound() {}
