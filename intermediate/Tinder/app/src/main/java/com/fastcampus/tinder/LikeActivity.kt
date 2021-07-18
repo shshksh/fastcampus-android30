@@ -26,6 +26,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
     private val userDB by lazy { Firebase.database.reference.child("Users") }
 
     private val cardItemAdapter by lazy { CardItemAdapter() }
+    private val cardLayoutManager by lazy { CardStackLayoutManager(this, this) }
     private val cardItems = mutableListOf<CardItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +53,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
 
     private fun initViews() {
         binding.cardStackView.apply {
-            layoutManager = CardStackLayoutManager(this@LikeActivity, this@LikeActivity)
+            layoutManager = cardLayoutManager
             adapter = cardItemAdapter
         }
     }
@@ -139,7 +140,38 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
     override fun onCardDragging(direction: Direction?, ratio: Float) {}
 
     override fun onCardSwiped(direction: Direction?) {
+        when (direction) {
+            Direction.Right -> like()
+            Direction.Left -> disLike()
+            else -> {
+            }
+        }
+    }
 
+    private fun like() {
+        val card = cardItems[cardLayoutManager.topPosition - 1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId)
+            .child("likedBy")
+            .child("like")
+            .child(getCurrentUserID())
+            .setValue(true)
+
+        showToast("${card.name}님을 Like 하셨습니다.")
+    }
+
+    private fun disLike() {
+        val card = cardItems[cardLayoutManager.topPosition - 1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId)
+            .child("likedBy")
+            .child("disLike")
+            .child(getCurrentUserID())
+            .setValue(true)
+
+        showToast("${card.name}님을 disLike 하셨습니다.")
     }
 
     override fun onCardRewound() {}
