@@ -6,6 +6,13 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.fastcampus.tinder.DBKey.Companion.DIS_LIKE
+import com.fastcampus.tinder.DBKey.Companion.LIKE
+import com.fastcampus.tinder.DBKey.Companion.LIKED_BY
+import com.fastcampus.tinder.DBKey.Companion.MATCH
+import com.fastcampus.tinder.DBKey.Companion.NAME
+import com.fastcampus.tinder.DBKey.Companion.USERS
+import com.fastcampus.tinder.DBKey.Companion.USER_ID
 import com.fastcampus.tinder.databinding.ActivityLikeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
@@ -24,7 +31,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
 
     private val auth by lazy { FirebaseAuth.getInstance() }
 
-    private val userDB by lazy { Firebase.database.reference.child("Users") }
+    private val userDB by lazy { Firebase.database.reference.child(USERS) }
 
     private val cardItemAdapter by lazy { CardItemAdapter() }
     private val cardLayoutManager by lazy { CardStackLayoutManager(this, this) }
@@ -38,7 +45,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         val currentUserDB = userDB.child(getCurrentUserID())
         currentUserDB.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.child("name").value == null) {
+                if (snapshot.child(NAME).value == null) {
                     showNameInputDialog()
                     return
                 }
@@ -90,15 +97,15 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
     }
 
     private fun isUnselectedUser(snapshot: DataSnapshot) =
-        (snapshot.child("userId").value != getCurrentUserID()
-                && snapshot.child("likedBy").child("like").hasChild(getCurrentUserID()).not()
-                && snapshot.child("likedBy").child("disLike").hasChild(getCurrentUserID()).not())
+        (snapshot.child(USER_ID).value != getCurrentUserID()
+                && snapshot.child(LIKED_BY).child(LIKE).hasChild(getCurrentUserID()).not()
+                && snapshot.child(LIKED_BY).child(DIS_LIKE).hasChild(getCurrentUserID()).not())
 
     private fun addNewUser(snapshot: DataSnapshot) {
-        val userId = snapshot.child("userId").value.toString()
+        val userId = snapshot.child(USER_ID).value.toString()
         var name = "undecided"
-        if (snapshot.child("name").value != null) {
-            name = snapshot.child("name").value.toString()
+        if (snapshot.child(NAME).value != null) {
+            name = snapshot.child(NAME).value.toString()
         }
 
         cardItems.add(CardItem(userId, name))
@@ -107,7 +114,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
 
     private fun updateUserName(snapshot: DataSnapshot) {
         cardItems.find { it.userId == snapshot.key }?.let {
-            it.name = snapshot.child("name").value.toString()
+            it.name = snapshot.child(NAME).value.toString()
             cardItemAdapter.submitList(cardItems)
         }
     }
@@ -116,7 +123,7 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         val editText = EditText(this)
 
         AlertDialog.Builder(this)
-            .setTitle("이름을 입력해주세요")
+            .setTitle(getString(R.string.write_name))
             .setView(editText)
             .setPositiveButton("저장") { _, _ ->
                 if (editText.text.isEmpty())
@@ -132,8 +139,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         val userId = getCurrentUserID()
         val currentUserDB = userDB.child(userId)
         val user = mutableMapOf<String, Any>()
-        user["userId"] = userId
-        user["name"] = name
+        user[USER_ID] = userId
+        user[NAME] = name
         currentUserDB.updateChildren(user)
 
         getUnselectedUsers()
@@ -164,8 +171,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         cardItems.removeFirst()
 
         userDB.child(card.userId)
-            .child("likedBy")
-            .child("like")
+            .child(LIKED_BY)
+            .child(LIKE)
             .child(getCurrentUserID())
             .setValue(true)
 
@@ -176,8 +183,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
 
     private fun saveMatchIfOtherUserLikedMe(otherUserId: String) {
         val otherUserDB = userDB.child(getCurrentUserID())
-            .child("likedBy")
-            .child("like")
+            .child(LIKED_BY)
+            .child(LIKE)
             .child(otherUserId)
 
         otherUserDB.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -194,8 +201,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
 
     private fun updateMatchedUser(from: String, to: String) {
         userDB.child(from)
-            .child("likedBy")
-            .child("match")
+            .child(LIKED_BY)
+            .child(MATCH)
             .child(to)
             .setValue(true)
     }
@@ -205,8 +212,8 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         cardItems.removeFirst()
 
         userDB.child(card.userId)
-            .child("likedBy")
-            .child("disLike")
+            .child(LIKED_BY)
+            .child(DIS_LIKE)
             .child(getCurrentUserID())
             .setValue(true)
 
