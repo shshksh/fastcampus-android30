@@ -1,5 +1,6 @@
 package com.fastcampus.tinder
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -55,6 +56,16 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
         binding.cardStackView.apply {
             layoutManager = cardLayoutManager
             adapter = cardItemAdapter
+        }
+
+        binding.btnSignOut.setOnClickListener {
+            auth.signOut()
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+
+        binding.btnMatchList.setOnClickListener {
+            startActivity(Intent(this, MatchedUserActivity::class.java))
         }
     }
 
