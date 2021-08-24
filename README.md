@@ -15,7 +15,7 @@
 - [오늘의 명언](https://github.com/shshksh/fastcampus-android30/tree/master/intermediate/ThoughtOfTheDay)
 - [알람 앱](https://github.com/shshksh/fastcampus-android30/tree/master/intermediate/AlarmApp)
 - [도서 리뷰 앱](https://github.com/shshksh/fastcampus-android30/tree/master/intermediate/BookReview)
-- 틴더
+- [틴더](https://github.com/shshksh/fastcampus-android30/tree/master/intermediate/Tinder)
 - 중고거래 앱
 - 에어비엔비
 
