@@ -158,7 +158,35 @@ class LikeActivity : AppCompatActivity(), CardStackListener {
             .child(getCurrentUserID())
             .setValue(true)
 
+        saveMatchIfOtherUserLikedMe(card.userId)
+
         showToast("${card.name}님을 Like 하셨습니다.")
+    }
+
+    private fun saveMatchIfOtherUserLikedMe(otherUserId: String) {
+        val otherUserDB = userDB.child(getCurrentUserID())
+            .child("likedBy")
+            .child("like")
+            .child(otherUserId)
+
+        otherUserDB.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.value == true) {
+                    updateMatchedUser(getCurrentUserID(), otherUserId)
+                    updateMatchedUser(otherUserId, getCurrentUserID())
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun updateMatchedUser(from: String, to: String) {
+        userDB.child(from)
+            .child("likedBy")
+            .child("match")
+            .child(to)
+            .setValue(true)
     }
 
     private fun disLike() {
