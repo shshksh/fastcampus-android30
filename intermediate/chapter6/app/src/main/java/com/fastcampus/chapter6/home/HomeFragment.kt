@@ -1,9 +1,11 @@
 package com.fastcampus.chapter6.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.fastcampus.chapter6.AddArticleActivity
 import com.fastcampus.chapter6.R
 import com.fastcampus.chapter6.data.FirebaseRepository.articleDB
 import com.fastcampus.chapter6.databinding.FragmentHomeBinding
@@ -46,11 +48,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initViews() {
         initArticleRecyclerView()
+        initFAB()
     }
 
     private fun initArticleRecyclerView() {
         binding.rvArticle.layoutManager = LinearLayoutManager(context)
         binding.rvArticle.adapter = adapter
+    }
+
+    private fun initFAB() {
+        binding.fabAdd.setOnClickListener {
+//            if (isLogin())
+            startActivity(Intent(requireContext(), AddArticleActivity::class.java))
+//            else
+//                Snackbar.make(it, "로그인 후 사용해주세요.", Snackbar.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adapter.notifyDataSetChanged()
     }
 
     override fun onDestroyView() {
