@@ -1,5 +1,7 @@
 package com.fastcampus.chapter6.data
 
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -16,6 +18,18 @@ object FirebaseRepository {
     fun isLogin() = auth.currentUser != null
 
     fun currentUserId() = auth.currentUser?.uid.orEmpty()
+
+    fun signOut() {
+        auth.signOut()
+    }
+
+    fun login(email: String, password: String): Task<AuthResult> =
+        auth.signInWithEmailAndPassword(email, password)
+
+    fun getEmail() = auth.currentUser?.email
+
+    fun signUp(email: String, password: String): Task<AuthResult> =
+        auth.createUserWithEmailAndPassword(email, password)
 
     private const val DB_ARTICLES = "Articles"
 }
