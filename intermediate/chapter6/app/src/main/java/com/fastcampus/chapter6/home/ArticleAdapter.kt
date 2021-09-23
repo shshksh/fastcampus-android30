@@ -10,7 +10,9 @@ import com.fastcampus.chapter6.databinding.ItemArticleBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ArticleAdapter : ListAdapter<ArticleModel, ArticleAdapter.ViewHolder>(diffUtil) {
+class ArticleAdapter(
+    private val onItemClick: (ArticleModel) -> Unit
+) : ListAdapter<ArticleModel, ArticleAdapter.ViewHolder>(diffUtil) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(ItemArticleBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -36,6 +38,9 @@ class ArticleAdapter : ListAdapter<ArticleModel, ArticleAdapter.ViewHolder>(diff
                         .load(articleModel.imageUrl)
                         .into(ivThumbnail)
                 }
+            }
+            binding.root.setOnClickListener {
+                onItemClick(articleModel)
             }
         }
     }
