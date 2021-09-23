@@ -37,5 +37,6 @@ object FirebaseRepository {
 
     private const val DB_ARTICLES = "Articles"
     private const val DB_USERS = "Users"
+    const val DB_CHATS = "Chats"
     const val CHILD_CHAT = "chat"
 }
