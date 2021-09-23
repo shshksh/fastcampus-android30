@@ -12,6 +12,9 @@ object FirebaseRepository {
 
     val articleDB by lazy { Firebase.database.reference.child(DB_ARTICLES) }
     val userDB by lazy { Firebase.database.reference.child(DB_USERS) }
+    val chatDB by lazy {
+        Firebase.database.reference.child(DB_USERS).child(currentUserId()).child(CHILD_CHAT)
+    }
 
     private val storage by lazy { Firebase.storage }
     val articleStorage by lazy { storage.reference.child("article/photo") }
