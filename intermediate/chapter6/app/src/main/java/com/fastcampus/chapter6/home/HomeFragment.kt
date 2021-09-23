@@ -7,8 +7,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fastcampus.chapter6.AddArticleActivity
 import com.fastcampus.chapter6.R
+import com.fastcampus.chapter6.chatlist.ChatListItem
+import com.fastcampus.chapter6.data.FirebaseRepository.CHILD_CHAT
 import com.fastcampus.chapter6.data.FirebaseRepository.articleDB
+import com.fastcampus.chapter6.data.FirebaseRepository.currentUserId
+import com.fastcampus.chapter6.data.FirebaseRepository.isLogin
+import com.fastcampus.chapter6.data.FirebaseRepository.userDB
 import com.fastcampus.chapter6.databinding.FragmentHomeBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -40,10 +46,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentHomeBinding.bind(view)
-        adapter = ArticleAdapter()
+        adapter = ArticleAdapter { article -> createChatRoom(article, view) }
 
         initViews()
         articleDB.addChildEventListener(listener)
+    }
+
+    private fun createChatRoom(article: ArticleModel, view: View) {
+        if (isLogin()) {
+            if (currentUserId() != article.sellerId) {
+                val chatRoom = ChatListItem(
+                    buyerId = currentUserId(),
+                    sellerId = article.sellerId,
+                    itemTitle = article.title,
+                    key = System.currentTimeMillis()
+                )
+
+                userDB.child(currentUserId())
+                    .child(CHILD_CHAT)
+                    .push()
+                    .setValue(chatRoom)
+
+                userDB.child(article.sellerId)
+                    .child(CHILD_CHAT)
+                    .push()
+                    .setValue(chatRoom)
+
+                Snackbar.make(view, "채팅방이 생성되었습니다.", Snackbar.LENGTH_LONG).show()
+
+            } else {
+                Snackbar.make(view, "내가 올린 아이템입니다.", Snackbar.LENGTH_LONG).show()
+            }
+        } else {
+            Snackbar.make(view, "로그인 후 사용해주세요.", Snackbar.LENGTH_LONG).show()
+        }
     }
 
     private fun initViews() {
