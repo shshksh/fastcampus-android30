@@ -1,10 +1,12 @@
 package com.fastcampus.chapter6.chatlist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fastcampus.chapter6.R
+import com.fastcampus.chapter6.chatdetail.ChatRoomActivity
 import com.fastcampus.chapter6.data.FirebaseRepository.chatDB
 import com.fastcampus.chapter6.data.FirebaseRepository.isLogin
 import com.fastcampus.chapter6.databinding.FragmentChatListBinding
@@ -24,7 +26,12 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentChatListBinding.bind(view)
 
-        adapter = ChatListAdapter { }
+        adapter = ChatListAdapter {
+            val intent = Intent(requireContext(), ChatRoomActivity::class.java).apply {
+                putExtra("chatKey", it.key)
+            }
+            startActivity(intent)
+        }
 
         chatRoomList.clear()
 
