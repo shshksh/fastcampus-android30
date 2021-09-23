@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Chapter6">
         <activity
+            android:name=".chatdetail.ChatRoomActivity"
+            android:exported="true" />
+        <activity
             android:name=".AddArticleActivity"
             android:exported="true" />
         <activity
