@@ -11,6 +11,7 @@ object FirebaseRepository {
     private val auth by lazy { Firebase.auth }
 
     val articleDB by lazy { Firebase.database.reference.child(DB_ARTICLES) }
+    val userDB by lazy { Firebase.database.reference.child(DB_USERS) }
 
     private val storage by lazy { Firebase.storage }
     val articleStorage by lazy { storage.reference.child("article/photo") }
@@ -32,4 +33,6 @@ object FirebaseRepository {
         auth.createUserWithEmailAndPassword(email, password)
 
     private const val DB_ARTICLES = "Articles"
+    private const val DB_USERS = "Users"
+    const val CHILD_CHAT = "chat"
 }
