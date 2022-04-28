@@ -6,13 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
+import com.naver.maps.map.MapView
 
 class MainActivity : ComponentActivity() {
+
+    private val mapView: MapView? by lazy { findViewById(R.id.map_view) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -20,22 +24,27 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                    MainScreen()
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     Chapter07airbnbTheme {
-        Greeting("Android")
+        MainScreen()
     }
 }
