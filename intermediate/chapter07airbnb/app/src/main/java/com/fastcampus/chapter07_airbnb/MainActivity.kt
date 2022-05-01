@@ -11,6 +11,7 @@ import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -19,6 +20,8 @@ import com.naver.maps.map.util.FusedLocationSource
 class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
     private lateinit var mapView: MapView
+    private lateinit var naverMap: NaverMap
+    private lateinit var locationSource: FusedLocationSource
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,16 +51,42 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(map: NaverMap) {
-        map.maxZoom = 18.0
-        map.minZoom = 10.0
+        naverMap = map
+
+        naverMap.maxZoom = 18.0
+        naverMap.minZoom = 10.0
 
         val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.497885, 127.027512))
 
-        map.moveCamera(cameraUpdate)
+        naverMap.moveCamera(cameraUpdate)
 
-        val uiSetting = map.uiSettings
+        val uiSetting = naverMap.uiSettings
         uiSetting.isLocationButtonEnabled = true
 
-        map.locationSource = FusedLocationSource(this, 1000)
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        naverMap.locationSource = locationSource
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            return
+        }
+
+        if (locationSource.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+            if (!locationSource.isActivated) {
+                naverMap.locationTrackingMode = LocationTrackingMode.None
+            }
+            return
+        }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 }
