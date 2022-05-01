@@ -1,5 +1,6 @@
 package com.fastcampus.chapter07_airbnb
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,9 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
+import com.fastcampus.chapter07_airbnb.data.HouseModel
+import com.fastcampus.chapter07_airbnb.network.house.HouseService
 import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.naver.maps.geometry.LatLng
@@ -18,6 +22,10 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity(), OnMapReadyCallback {
@@ -69,9 +77,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         naverMap.locationSource = locationSource
 
-        val marker = Marker()
-        marker.position = LatLng(37.500493, 127.029740)
-        marker.map = naverMap
+        getHouseListFromAPI()
     }
 
     override fun onRequestPermissionsResult(
@@ -90,6 +96,31 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 naverMap.locationTrackingMode = LocationTrackingMode.None
             }
             return
+        }
+    }
+
+    private fun getHouseListFromAPI() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://run.mocky.io")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+
+        retrofit.create(HouseService::class.java).also {
+            lifecycleScope.launch {
+                addMarkers(it.getHouseList().items)
+            }
+        }
+    }
+
+    private fun addMarkers(items: List<HouseModel>) {
+        items.forEach { house ->
+            Marker().apply {
+                position = LatLng(house.lat, house.lng)
+                map = naverMap
+                tag = house.id
+                icon = MarkerIcons.BLACK
+                iconTintColor = Color.RED
+            }
         }
     }
 
