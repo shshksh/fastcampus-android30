@@ -4,31 +4,21 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.fastcampus.chapter07_airbnb.R
 import com.naver.maps.map.MapView
 
 
 @Composable
-fun MainScreen() {
-    NaverMapView()
+fun MainScreen(mapView: MapView) {
+    NaverMapView(mapView)
 }
 
 @Composable
-fun NaverMapView() {
-    val context = LocalContext.current
-
-    val mapView = remember {
-        MapView(context).apply {
-            id = R.id.map_view
-        }
-    }
+fun NaverMapView(mapView: MapView) {
     AndroidView(
         factory = { mapView },
         modifier = Modifier.fillMaxSize()
