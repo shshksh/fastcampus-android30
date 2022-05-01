@@ -15,6 +15,7 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback {
@@ -65,6 +66,10 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         naverMap.locationSource = locationSource
+
+        val marker = Marker()
+        marker.position = LatLng(37.500493, 127.029740)
+        marker.map = naverMap
     }
 
     override fun onRequestPermissionsResult(
