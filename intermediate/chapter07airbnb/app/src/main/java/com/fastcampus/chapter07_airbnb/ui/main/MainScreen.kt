@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.ExperimentalMaterialApi
@@ -34,7 +35,6 @@ import com.naver.maps.map.MapView
 fun MainScreen(mapView: MapView) {
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    NaverMapView(mapView = mapView)
     BottomSheetScaffold(
         sheetContent = {
             Box(
@@ -63,7 +63,9 @@ fun MainScreen(mapView: MapView) {
             topStart = CornerSize(30.dp),
             topEnd = CornerSize(30.dp)
         ),
-    ) {}
+    ) { innerPadding ->
+        NaverMapView(mapView = mapView, modifier = Modifier.padding(innerPadding))
+    }
 }
 
 @Composable
