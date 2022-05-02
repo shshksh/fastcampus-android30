@@ -22,14 +22,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
 import com.naver.maps.map.MapView
 
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
 fun MainScreen(mapView: MapView) {
@@ -64,7 +69,9 @@ fun MainScreen(mapView: MapView) {
             topEnd = CornerSize(30.dp)
         ),
     ) { innerPadding ->
-        NaverMapView(mapView = mapView, modifier = Modifier.padding(innerPadding))
+        NaverMapView(mapView = mapView)
+
+        HousePager(modifier = Modifier.padding(innerPadding))
     }
 }
 
@@ -94,5 +101,28 @@ private fun getMapViewLifecycleObserver(mapView: MapView) = LifecycleEventObserv
         Lifecycle.Event.ON_STOP -> mapView.onStop()
         Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
         else -> throw  IllegalStateException()
+    }
+}
+
+@ExperimentalPagerApi
+@Composable
+private fun HousePager(modifier: Modifier = Modifier) {
+    HorizontalPager(
+        count = 10,
+        modifier = modifier
+            .fillMaxSize()
+            .height(100.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+    }
+}
+
+@ExperimentalPagerApi
+@Preview
+@Composable
+fun HousePagerPreview() {
+    Chapter07airbnbTheme {
+        HousePager()
     }
 }

@@ -14,6 +14,7 @@ import com.fastcampus.chapter07_airbnb.data.HouseModel
 import com.fastcampus.chapter07_airbnb.network.house.HouseService
 import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+@ExperimentalPagerApi
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
