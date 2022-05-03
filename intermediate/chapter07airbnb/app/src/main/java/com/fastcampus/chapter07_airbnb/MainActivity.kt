@@ -9,9 +9,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.lifecycleScope
 import com.fastcampus.chapter07_airbnb.data.HouseModel
-import com.fastcampus.chapter07_airbnb.network.house.HouseService
 import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -24,11 +22,6 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
@@ -80,8 +73,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         naverMap.locationSource = locationSource
-
-        getHouseListFromAPI()
     }
 
     override fun onRequestPermissionsResult(
@@ -100,22 +91,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 naverMap.locationTrackingMode = LocationTrackingMode.None
             }
             return
-        }
-    }
-
-    private fun getHouseListFromAPI() {
-        val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://run.mocky.io")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-
-        retrofit.create(HouseService::class.java).also {
-            lifecycleScope.launch {
-                addMarkers(it.getHouseList().items)
-            }
         }
     }
 
