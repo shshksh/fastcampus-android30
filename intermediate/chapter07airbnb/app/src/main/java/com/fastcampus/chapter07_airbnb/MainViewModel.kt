@@ -16,6 +16,9 @@ class MainViewModel : ViewModel() {
 
     private val houseService: HouseService
 
+    private val _houseList: MutableStateFlow<List<HouseModel>> = MutableStateFlow(listOf())
+    val houseList: StateFlow<List<HouseModel>> = _houseList
+
     init {
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
@@ -28,9 +31,6 @@ class MainViewModel : ViewModel() {
 
         fetchHouseList()
     }
-
-    private val _houseList: MutableStateFlow<List<HouseModel>> = MutableStateFlow(listOf())
-    val houseList: StateFlow<List<HouseModel>> = _houseList
 
     fun fetchHouseList() {
         viewModelScope.launch {
