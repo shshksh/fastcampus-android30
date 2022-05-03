@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
@@ -20,6 +22,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +36,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fastcampus.chapter07_airbnb.MainViewModel
 import com.fastcampus.chapter07_airbnb.data.HouseModel
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -74,10 +80,11 @@ fun MainScreen(mapView: MapView) {
             topStart = CornerSize(30.dp),
             topEnd = CornerSize(30.dp)
         ),
-    ) { innerPadding ->
-        NaverMapView(mapView = mapView)
-
-        HousePager(modifier = Modifier.padding(innerPadding))
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            NaverMapView(mapView = mapView)
+            HousePager(modifier = Modifier.padding(bottom = 120.dp))
+        }
     }
 }
 
@@ -112,20 +119,29 @@ private fun getMapViewLifecycleObserver(mapView: MapView) = LifecycleEventObserv
 
 @ExperimentalPagerApi
 @Composable
-private fun HousePager(modifier: Modifier = Modifier) {
+private fun HousePager(modifier: Modifier = Modifier, viewModel: MainViewModel = viewModel()) {
+    val houseList by viewModel.houseList.collectAsState()
+
     HorizontalPager(
-        count = 10,
+        count = houseList.size,
         modifier = modifier
-            .fillMaxSize()
-            .height(100.dp),
+            .fillMaxWidth()
+            .wrapContentHeight(),
         verticalAlignment = Alignment.CenterVertically
-    ) {
+    ) { page ->
+        HouseCard(houseModel = houseList[page])
     }
 }
 
 @Composable
 fun HouseCard(houseModel: HouseModel) {
-    Card(modifier = Modifier.fillMaxSize()) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(start = 30.dp, end = 30.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
         Row(modifier = Modifier.fillMaxSize()) {
             GlideImage(
                 imageModel = houseModel.imgUrl,
@@ -138,11 +154,15 @@ fun HouseCard(houseModel: HouseModel) {
                     .fillMaxSize()
                     .padding(12.dp)
             ) {
-                Text(
-                    text = houseModel.title,
-                    modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp),
-                    maxLines = 2
-                )
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = houseModel.title,
+                        maxLines = 2
+                    )
+                }
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = houseModel.price,
