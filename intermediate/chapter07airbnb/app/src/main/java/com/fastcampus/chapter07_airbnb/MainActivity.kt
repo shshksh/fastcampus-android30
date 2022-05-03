@@ -4,11 +4,15 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.fastcampus.chapter07_airbnb.data.HouseModel
 import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
@@ -22,10 +26,13 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
+import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 class MainActivity : ComponentActivity(), OnMapReadyCallback {
+
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
@@ -64,7 +71,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         naverMap.maxZoom = 18.0
         naverMap.minZoom = 10.0
 
-        val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.497885, 127.027512))
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.34677363598015, 127.11115521414318))
 
         naverMap.moveCamera(cameraUpdate)
 
@@ -73,6 +80,14 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         naverMap.locationSource = locationSource
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.houseList.collect {
+                    addMarkers(it)
+                }
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(
