@@ -4,12 +4,16 @@ import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -28,10 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.fastcampus.chapter07_airbnb.data.HouseModel
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.naver.maps.map.MapView
+import com.skydoves.landscapist.glide.GlideImage
 
 
 @ExperimentalPagerApi
@@ -114,15 +120,52 @@ private fun HousePager(modifier: Modifier = Modifier) {
             .height(100.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
     }
 }
 
-@ExperimentalPagerApi
-@Preview
 @Composable
-fun HousePagerPreview() {
+fun HouseCard(houseModel: HouseModel) {
+    Card(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            GlideImage(
+                imageModel = houseModel.imgUrl,
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(100.dp)
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = houseModel.title,
+                    modifier = Modifier.padding(start = 12.dp, top = 12.dp, end = 12.dp),
+                    maxLines = 2
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = houseModel.price,
+                    style = TextStyle(color = Color.Black, fontWeight = FontWeight.Bold)
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 300, heightDp = 100)
+@Composable
+fun HouseCardPreview() {
+    val sampleModel = HouseModel(
+        id = 0,
+        title = "미금역 오피스텔",
+        price = "5000/80",
+        imgUrl = "",
+        lat = 37.0,
+        lng = 127.0
+    )
+
     Chapter07airbnbTheme {
-        HousePager()
+        HouseCard(sampleModel)
     }
 }
