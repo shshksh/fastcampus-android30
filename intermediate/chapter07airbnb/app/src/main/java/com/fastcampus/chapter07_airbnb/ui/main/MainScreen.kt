@@ -1,6 +1,7 @@
 package com.fastcampus.chapter07_airbnb.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +27,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +52,7 @@ import com.fastcampus.chapter07_airbnb.data.HouseModel
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 import com.naver.maps.map.MapView
 import com.naver.maps.map.widget.LocationButtonView
 
@@ -60,6 +64,7 @@ fun MainScreen(
     mapView: MapView,
     locationButton: LocationButtonView,
     viewModel: MainViewModel = viewModel(),
+    onPageChange: (Int) -> Unit,
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val houseList by viewModel.houseList.collectAsState()
@@ -81,7 +86,11 @@ fun MainScreen(
             NaverMapView(mapView = mapView,
                 locationButton,
                 modifier = Modifier.padding(bottom = 80.dp))
-            HousePager(modifier = Modifier.padding(bottom = 120.dp), houseList)
+            HousePager(
+                modifier = Modifier.padding(bottom = 120.dp),
+                houseList = houseList,
+                onPageChange = onPageChange
+            )
         }
     }
 }
@@ -129,15 +138,29 @@ private fun getMapViewLifecycleObserver(mapView: MapView) = LifecycleEventObserv
 
 @ExperimentalPagerApi
 @Composable
-private fun HousePager(modifier: Modifier = Modifier, houseList: List<HouseModel>) {
+private fun HousePager(
+    modifier: Modifier = Modifier,
+    houseList: List<HouseModel>,
+    onPageChange: (Int) -> Unit,
+) {
+    val pagerState = rememberPagerState()
+
     HorizontalPager(
         count = houseList.size,
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        state = pagerState
     ) { page ->
         HouseCard(houseModel = houseList[page])
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect {
+            Log.d("shsh", "HousePager: $it")
+            onPageChange(it)
+        }
     }
 }
 

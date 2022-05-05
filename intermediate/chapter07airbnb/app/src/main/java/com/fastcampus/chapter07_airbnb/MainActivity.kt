@@ -18,6 +18,7 @@ import com.fastcampus.chapter07_airbnb.ui.main.MainScreen
 import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
@@ -52,7 +53,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
-                    MainScreen(mapView, locationButton)
+                    MainScreen(mapView, locationButton, onPageChange = ::onPageChange)
                 }
             }
         }
@@ -121,6 +122,15 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 iconTintColor = Color.RED
             }
         }
+    }
+
+    private fun onPageChange(index: Int) {
+        if (viewModel.houseList.value.isEmpty()) return
+        val selectedHouse = viewModel.houseList.value[index]
+        val cameraUpdate = CameraUpdate.scrollTo(LatLng(selectedHouse.lat, selectedHouse.lng))
+            .animate(CameraAnimation.Easing)
+
+        naverMap.moveCamera(cameraUpdate)
     }
 
     companion object {
