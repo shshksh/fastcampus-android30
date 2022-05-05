@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,12 +50,17 @@ import com.fastcampus.chapter07_airbnb.ui.theme.Chapter07airbnbTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.naver.maps.map.MapView
+import com.naver.maps.map.widget.LocationButtonView
 
 
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
-fun MainScreen(mapView: MapView, viewModel: MainViewModel = viewModel()) {
+fun MainScreen(
+    mapView: MapView,
+    locationButton: LocationButtonView,
+    viewModel: MainViewModel = viewModel(),
+) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val houseList by viewModel.houseList.collectAsState()
 
@@ -72,18 +78,32 @@ fun MainScreen(mapView: MapView, viewModel: MainViewModel = viewModel()) {
         ),
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            NaverMapView(mapView = mapView)
+            NaverMapView(mapView = mapView,
+                locationButton,
+                modifier = Modifier.padding(bottom = 80.dp))
             HousePager(modifier = Modifier.padding(bottom = 120.dp), houseList)
         }
     }
 }
 
 @Composable
-fun NaverMapView(mapView: MapView, modifier: Modifier = Modifier) {
-    AndroidView(
-        factory = { mapView },
-        modifier = modifier.fillMaxSize()
-    )
+fun NaverMapView(
+    mapView: MapView,
+    locationButton: LocationButtonView,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopStart) {
+        AndroidView(
+            factory = { mapView },
+            modifier = modifier.fillMaxSize()
+        )
+        AndroidView(
+            factory = { locationButton },
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(12.dp)
+        )
+    }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(key1 = lifecycle, key2 = mapView) {

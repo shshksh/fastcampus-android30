@@ -26,6 +26,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
+import com.naver.maps.map.widget.LocationButtonView
 import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
     private lateinit var mapView: MapView
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private lateinit var locationButton: LocationButtonView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +46,13 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
             id = R.id.map_view
             getMapAsync(this@MainActivity)
         }
+        locationButton = LocationButtonView(this)
         setContent {
             Chapter07airbnbTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
-                    MainScreen(mapView)
+                    MainScreen(mapView, locationButton)
                 }
             }
         }
@@ -75,8 +78,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
         naverMap.moveCamera(cameraUpdate)
 
-        val uiSetting = naverMap.uiSettings
-        uiSetting.isLocationButtonEnabled = true
+        locationButton.map = naverMap
 
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         naverMap.locationSource = locationSource
