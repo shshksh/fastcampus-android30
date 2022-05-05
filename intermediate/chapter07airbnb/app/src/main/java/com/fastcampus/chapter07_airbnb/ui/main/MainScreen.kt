@@ -1,7 +1,6 @@
 package com.fastcampus.chapter07_airbnb.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,7 +63,6 @@ fun MainScreen(
     mapView: MapView,
     locationButton: LocationButtonView,
     viewModel: MainViewModel = viewModel(),
-    onPageChange: (Int) -> Unit,
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val houseList by viewModel.houseList.collectAsState()
@@ -89,7 +87,6 @@ fun MainScreen(
             HousePager(
                 modifier = Modifier.padding(bottom = 120.dp),
                 houseList = houseList,
-                onPageChange = onPageChange
             )
         }
     }
@@ -141,9 +138,10 @@ private fun getMapViewLifecycleObserver(mapView: MapView) = LifecycleEventObserv
 private fun HousePager(
     modifier: Modifier = Modifier,
     houseList: List<HouseModel>,
-    onPageChange: (Int) -> Unit,
+    viewModel: MainViewModel = viewModel(),
 ) {
     val pagerState = rememberPagerState()
+    val pagePosition by viewModel.currentPosition.collectAsState()
 
     HorizontalPager(
         count = houseList.size,
@@ -157,9 +155,9 @@ private fun HousePager(
     }
 
     LaunchedEffect(pagerState) {
+        pagerState.scrollToPage(pagePosition)
         snapshotFlow { pagerState.currentPage }.collect {
-            Log.d("shsh", "HousePager: $it")
-            onPageChange(it)
+            viewModel.updatePosition(it)
         }
     }
 }

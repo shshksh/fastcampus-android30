@@ -19,6 +19,9 @@ class MainViewModel : ViewModel() {
     private val _houseList: MutableStateFlow<List<HouseModel>> = MutableStateFlow(listOf())
     val houseList: StateFlow<List<HouseModel>> = _houseList
 
+    private val _currentPosition = MutableStateFlow(0)
+    val currentPosition: StateFlow<Int> = _currentPosition
+
     init {
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
@@ -36,5 +39,9 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             _houseList.value = houseService.getHouseList().items
         }
+    }
+
+    fun updatePosition(position: Int) {
+        _currentPosition.value = position
     }
 }

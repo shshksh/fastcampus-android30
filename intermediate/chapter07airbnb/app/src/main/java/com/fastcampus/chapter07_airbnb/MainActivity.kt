@@ -53,7 +53,17 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
-                    MainScreen(mapView, locationButton, onPageChange = ::onPageChange)
+                    MainScreen(mapView, locationButton)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.currentPosition.collect {
+                        onPageChange(it)
+                    }
                 }
             }
         }
@@ -120,6 +130,11 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 tag = house.id
                 icon = MarkerIcons.BLACK
                 iconTintColor = Color.RED
+                setOnClickListener { overlay ->
+                    val position = (overlay.tag as? Int) ?: return@setOnClickListener false
+                    viewModel.updatePosition(position % items.size)
+                    true
+                }
             }
         }
     }
