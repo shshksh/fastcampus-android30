@@ -22,9 +22,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -121,54 +120,7 @@ private fun getMapViewLifecycleObserver(mapView: MapView) = LifecycleEventObserv
 @ExperimentalPagerApi
 @Composable
 private fun HousePager(modifier: Modifier = Modifier, viewModel: MainViewModel = viewModel()) {
-//    val houseList by viewModel.houseList.collectAsState()
-
-    val houseList by remember {
-        mutableStateOf(
-            listOf(
-                HouseModel(
-                    id = 1,
-                    title = "미금역!! 최저가 !!레지던스!!",
-                    imgUrl = "https://i.picsum.photos/id/20/200/200.jpg?hmac=wHmtG3BEC6aOsGZU_Q2wnxVQq34B__t4x4LFw-sptM8",
-                    lat = 37.34709399771526,
-                    lng = 127.11534278611443,
-                    price = "23,000원"
-                ),
-                HouseModel(
-                    id = 2,
-                    title = "미금 초등학교",
-                    imgUrl = "https://i.picsum.photos/id/1066/200/200.jpg?hmac=BHYYzH0KERL1WifyefL6hVVg0wURJUgTaByr75WmJug",
-                    lat = 37.345026117780804,
-                    lng = 127.11064478286458,
-                    price = "223,000원"
-                ),
-                HouseModel(
-                    id = 3,
-                    title = "초밥한상",
-                    imgUrl = "https://i.picsum.photos/id/970/200/200.jpg?hmac=KSuLGYyLCaNNAlylEC4xTZgle3Y_8zxKhAIXJaLCY4o",
-                    lat = 37.34729626391143,
-                    lng = 127.11112212653411,
-                    price = "103,000원"
-                ),
-                HouseModel(
-                    id = 4,
-                    title = "까치마을",
-                    imgUrl = "https://i.picsum.photos/id/408/200/200.jpg?hmac=VJjKULX_XeyV5C9mbWyv6XTsG5EV-ZBsqbiQIi6xTeg",
-                    lat = 37.347059854952604,
-                    lng = 127.11337897374493,
-                    price = "97,000원"
-                ),
-                HouseModel(
-                    id = 5,
-                    title = "홈플러스",
-                    imgUrl = "https://i.picsum.photos/id/1077/200/200.jpg?hmac=hiq7UCoz9ZFgr9HcMCpbnKhV-IMyOJqsQtVFyqmqohQ",
-                    lat = 37.34468349461681,
-                    lng = 127.11089256384473,
-                    price = "12,000원"
-                ),
-            )
-        )
-    }
+    val houseList by viewModel.houseList.collectAsState()
 
     HorizontalPager(
         count = houseList.size,
