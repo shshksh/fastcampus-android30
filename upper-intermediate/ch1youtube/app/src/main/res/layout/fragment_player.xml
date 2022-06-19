@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutDescription="@xml/fragment_player_scene">
@@ -10,15 +9,16 @@
         android:id="@+id/containerLayout"
         android:layout_width="0dp"
         android:layout_height="250dp"
+        android:background="@color/purple_200"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="@color/purple_200" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/playerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#00ff00"
         app:layout_constraintBottom_toBottomOf="@id/containerLayout"
         app:layout_constraintStart_toStartOf="@id/containerLayout"
         app:layout_constraintTop_toTopOf="@id/containerLayout" />
