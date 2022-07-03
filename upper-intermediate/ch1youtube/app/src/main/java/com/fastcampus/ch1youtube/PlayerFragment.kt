@@ -15,6 +15,7 @@ import com.fastcampus.ch1youtube.adapter.VideoAdapter
 import com.fastcampus.ch1youtube.databinding.FragmentPlayerBinding
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         initMotionLayoutEvent()
         initRecyclerView()
         initPlayer()
+        initControlButton()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -81,6 +83,27 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         player = ExoPlayer.Builder(requireContext()).build()
 
         binding.playerView.player = player
+        player?.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+
+                if (isPlaying) {
+                    binding.btnBottomPlayerControl.setImageResource(R.drawable.baseline_pause_24)
+                } else {
+                    binding.btnBottomPlayerControl.setImageResource(R.drawable.baseline_play_arrow_24)
+                }
+            }
+        })
+    }
+
+    private fun initControlButton() {
+        binding.btnBottomPlayerControl.setOnClickListener {
+            if (player?.isPlaying == true) {
+                player?.pause()
+            } else if (player?.isPlaying == false) {
+                player?.play()
+            }
+        }
     }
 
     private suspend fun observeVideoList() {
