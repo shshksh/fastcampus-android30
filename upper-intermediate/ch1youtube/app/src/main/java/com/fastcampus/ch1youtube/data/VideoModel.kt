@@ -6,4 +6,5 @@ data class VideoModel(
     val subtitle: String,
     val thumb: String,
     val title: String,
+    val onClick: (VideoModel) -> Unit,
 )

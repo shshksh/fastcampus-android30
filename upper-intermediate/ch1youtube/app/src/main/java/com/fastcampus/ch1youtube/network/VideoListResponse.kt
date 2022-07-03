@@ -15,11 +15,12 @@ data class VideoResponse(
     @field:Json(name = "thumb") val thumb: String,
     @field:Json(name = "title") val title: String,
 ) {
-    fun toVideoModel() = VideoModel(
+    fun toVideoModel(onClick: (VideoModel) -> Unit) = VideoModel(
         description = description,
         sources = sources,
         subtitle = subtitle,
         thumb = thumb,
-        title = title
+        title = title,
+        onClick = onClick,
     )
 }
