@@ -5,8 +5,24 @@
     <Transition
         motion:constraintSetEnd="@+id/end"
         motion:constraintSetStart="@id/start"
-        motion:duration="1000">
-        <KeyFrameSet></KeyFrameSet>
+        motion:duration="300">
+        <KeyFrameSet>
+            <KeyAttribute
+                android:alpha="0"
+                motion:framePosition="10"
+                motion:motionTarget="@+id/tv_bottomTitle" />
+            <KeyAttribute
+                android:alpha="0"
+                motion:framePosition="10"
+                motion:motionTarget="@+id/btn_bottomPlayerControl" />
+            <KeyPosition
+                motion:curveFit="linear"
+                motion:framePosition="10"
+                motion:keyPositionType="deltaRelative"
+                motion:motionTarget="@+id/playerView"
+                motion:percentWidth="1"
+                motion:percentX="1" />
+        </KeyFrameSet>
         <OnSwipe
             motion:touchAnchorId="@+id/containerLayout"
             motion:touchAnchorSide="bottom" />
@@ -61,6 +77,15 @@
             motion:layout_constraintBottom_toBottomOf="@id/containerLayout"
             motion:layout_constraintEnd_toEndOf="@id/containerLayout"
             motion:layout_constraintStart_toStartOf="@id/containerLayout"
+            motion:layout_constraintTop_toTopOf="@id/containerLayout" />
+        <Constraint
+            android:id="@+id/btn_bottomPlayerControl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:alpha="0"
+            motion:layout_constraintBottom_toBottomOf="@id/containerLayout"
+            motion:layout_constraintEnd_toEndOf="@id/containerLayout"
             motion:layout_constraintTop_toTopOf="@id/containerLayout" />
     </ConstraintSet>
 </MotionScene>
