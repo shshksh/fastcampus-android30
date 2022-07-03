@@ -20,7 +20,13 @@ class MainViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             _videoList.value = videoService.fetchVideoList().videos
-                .map { it.toVideoModel(_videoClickEvent::tryEmit) }
+                .map { it.toVideoModel(::emitVideoClickEvent) }
+        }
+    }
+
+    private fun emitVideoClickEvent(videoModel: VideoModel) {
+        viewModelScope.launch {
+            _videoClickEvent.emit(videoModel)
         }
     }
 }

@@ -5,7 +5,7 @@ import android.view.View
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.motion.widget.TransitionAdapter
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,7 +20,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private val binding: FragmentPlayerBinding
         get() = _binding!!
 
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by activityViewModels<MainViewModel>()
 
     private lateinit var videoAdapter: VideoAdapter
 
@@ -29,7 +29,13 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
         initMotionLayoutEvent()
         initRecyclerView()
-        observeVideoList()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch { observeVideoList() }
+                launch { observeVideoClickEvent() }
+            }
+        }
     }
 
     private fun initMotionLayoutEvent() {
@@ -51,15 +57,16 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         binding.rvAdditionalVideo.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun observeVideoList() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.videoList.collect {
-                        videoAdapter.submitList(it)
-                    }
-                }
-            }
+    private suspend fun observeVideoList() {
+        viewModel.videoList.collect {
+            videoAdapter.submitList(it)
+        }
+    }
+
+    private suspend fun observeVideoClickEvent() {
+        viewModel.videoClickEvent.collect {
+            binding.motionLayout.transitionToEnd()
+            binding.tvBottomTitle.text = it.title
         }
     }
 
