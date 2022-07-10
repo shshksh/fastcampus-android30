@@ -6,7 +6,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import com.fastcampus.ch2mellon.databinding.FragmentPlayerBinding
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -22,6 +21,8 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private var player: ExoPlayer? = null
 
     private lateinit var adapter: PlayListAdapter
+
+    private var model = PlayerModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentPlayerBinding.bind(view)
@@ -54,8 +55,12 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private fun initPlayListButton() {
         binding.playListImageView.setOnClickListener {
-            binding.playerViewGroup.isVisible = !binding.playerViewGroup.isVisible
-            binding.playListViewGroup.isVisible = !binding.playListViewGroup.isVisible
+            if (model.currentPosition == -1) return@setOnClickListener
+
+            binding.playerViewGroup.isVisible = model.isWatchingPlayListView
+            binding.playListViewGroup.isVisible = !model.isWatchingPlayListView
+
+            model.isWatchingPlayListView = !model.isWatchingPlayListView
         }
     }
 
@@ -80,19 +85,18 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     }
 
     private fun initRecyclerView() {
-        adapter = PlayListAdapter {
-
-        }
+        adapter = PlayListAdapter { playMusic(it) }
         binding.playListRecyclerView.adapter = adapter
         binding.playListRecyclerView.layoutManager = LinearLayoutManager(context)
     }
 
     private fun getVideoList() {
         viewLifecycleOwner.lifecycleScope.launch {
-            musicService.listMusics().musics
-                .mapIndexed { index, musicEntity -> musicEntity.mapper(index.toLong()) }
-                .also { setMusicList(it) }
-                .submitTo(adapter)
+            musicService.listMusics().let {
+                model = it.mapper()
+                setMusicList(model.getAdapterModels())
+                adapter.submitList(model.getAdapterModels())
+            }
         }
     }
 
@@ -106,13 +110,15 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         player?.prepare()
     }
 
+    private fun playMusic(musicModel: MusicModel) {
+        model.updateCurrentPosition(musicModel)
+        player?.seekTo(model.currentPosition, 0)
+        player?.play()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun <E> List<E>.submitTo(adapter: ListAdapter<E, PlayListAdapter.ViewHolder>) {
-        adapter.submitList(this)
     }
 
     companion object {
