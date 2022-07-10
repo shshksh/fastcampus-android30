@@ -39,4 +39,6 @@ data class PlayerModel(
 
         return playMusicList[currentPosition]
     }
+
+    fun currentMusicModel() = playMusicList.getOrNull(currentPosition)
 }
