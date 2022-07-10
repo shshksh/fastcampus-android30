@@ -76,11 +76,13 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         }
 
         binding.skipNextImageView.setOnClickListener {
-
+            val nextMusic = model.nextMusic() ?: return@setOnClickListener
+            playMusic(nextMusic)
         }
 
         binding.skipPrevImageView.setOnClickListener {
-
+            val prevMusic = model.prevMusic() ?: return@setOnClickListener
+            playMusic(prevMusic)
         }
     }
 
